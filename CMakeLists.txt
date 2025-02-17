@@ -7,6 +7,16 @@ set_target_properties(NativeILDecompile
         CXX_STANDARD 20
         CXX_STANDARD_REQUIRED ON)
 
+if(WIN32)
+    set(ILDECOMPILEINTERFACE_NAME "ILDecompileInterface.dll")
+elseif(APPLE)
+    set(ILDECOMPILEINTERFACE_NAME "ILDecompileInterface.dylib")
+else()
+    set(ILDECOMPILEINTERFACE_NAME "ILDecompileInterface.so")
+endif()
+
+target_compile_definitions(NativeILDecompile PRIVATE ILDECOMPILEINTERFACE_NAME="${ILDECOMPILEINTERFACE_NAME}")
+
 option(BUILD_EXAMPLE_PROJECT "Build the example project." OFF)
 
 if(BUILD_EXAMPLE_PROJECT)

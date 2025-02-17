@@ -1,12 +1,15 @@
 #include "ildecompile.h"
 #include <memory>
-#include <stdexcept>
 
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#include <system_error>
+#include <Windows.h>
 #elif defined(__unix__)
 #include <dlfcn.h>
+#include <system_error>
+#else
+#include <stdexcept>
 #endif
 
 #ifdef DONT_ENFORCE_UTF8
@@ -42,12 +45,12 @@ HandlePtr acquireHandle(const char* name)
 #ifdef WIN32
     HandlePtr handle(LoadLibraryA(name));
     if (!handle)
-        throw std::runtime_error(std::string("Error loading interface library: ") + GetLastError());
+        throw std::system_error(GetLastError(), std::system_category(), "Error loading interface library");
     return handle;
 #elif defined(__unix__)
     HandlePtr handle(dlopen(name, RTLD_LAZY));
     if (!handle)
-        throw std::runtime_error(std::string("Error loading interface library: ") + dlerror());
+        throw std::system_error(errno, std::system_category(), "Error loading interface library");
     return handle;
 #else
     throw std::runtime_error("Unsupported platform");
@@ -75,14 +78,14 @@ auto invokeInterfaceMethod(auto func, Args... args)
 
 std::string ILDecompile::decompileMethod(StringIn assembly_, StringIn namespace_, StringIn type_, StringIn method_)
 {
-    HandlePtr handle = acquireHandle("./ILDecompileInterface.so");
+    HandlePtr handle = acquireHandle("./" ILDECOMPILEINTERFACE_NAME);
     auto decompileMethod = fnDecompileMethod(resolveFunctionPtr(handle.get(), "DecompileMethod"));
     return invokeInterfaceMethod(decompileMethod, assembly_, namespace_, type_, method_);
 }
 
 std::string ILDecompile::decompileType(StringIn assembly_, StringIn namespace_, StringIn type_)
 {
-    HandlePtr handle = acquireHandle("./ILDecompileInterface.so");
+    HandlePtr handle = acquireHandle("./" ILDECOMPILEINTERFACE_NAME);
     auto decompileType = fnDecompileType(resolveFunctionPtr(handle.get(), "DecompileType"));
     return invokeInterfaceMethod(decompileType, assembly_, namespace_, type_);
 }
