@@ -1,6 +1,6 @@
 #include "ildecompile.h"
-#include <boost/nowide/args.hpp>
 #include <iostream>
+#include <nowide/args.hpp>
 #include <vector>
 
 int main(int argc, char* argv[])
@@ -11,7 +11,7 @@ int main(int argc, char* argv[])
         return EXIT_SUCCESS;
     }
 
-    boost::nowide::args _(argc, argv); // ensure args are UTF-8 encoded
+    nowide::args _(argc, argv); // ensure args are UTF-8 encoded
     std::vector<std::string_view> args(argv, argv + argc);
 
     std::u8string assembly_(args[1].begin(), args[1].end());
