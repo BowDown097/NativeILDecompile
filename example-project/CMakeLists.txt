@@ -13,8 +13,8 @@ FetchContent_MakeAvailable(nowide)
 
 # i don't think this normally has to be done, but because this is a child project of the library, we have to
 add_custom_command(TARGET example-project POST_BUILD
-    COMMENT "Link interface library"
-    COMMAND ${CMAKE_COMMAND} -E create_symlink $<TARGET_FILE_DIR:NativeILDecompile>/ILDecompileInterface.so ILDecompileInterface.so
+    COMMENT "Linking C# library"
+    COMMAND ${CMAKE_COMMAND} -E create_symlink $<TARGET_FILE_DIR:NativeILDecompile>/${ILDECOMPILEINTERFACE_NAME} ${ILDECOMPILEINTERFACE_NAME}
     VERBATIM)
 
 target_link_libraries(example-project PRIVATE NativeILDecompile nowide)
